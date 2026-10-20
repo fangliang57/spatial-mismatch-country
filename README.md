@@ -2,7 +2,9 @@
 
 Leon's small, self-contained research companion for the BTB project.
 
-**Scope:** the original 404 study counties across 25 states. This is not a nationwide county dataset. Version 0.1.0, assembled October 20, 2026.
+to access: https://fangliang57.github.io/spatial-mismatch-country/#county=42011&year=2016
+
+**Scope:** the original 404 study counties across 25 states. 
 
 
 ```sh
