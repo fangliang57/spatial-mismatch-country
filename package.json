@@ -1,0 +1,13 @@
+{
+  "name": "btb-spatial-mismatch",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "An accessible county-year spatial mismatch explorer for the BTB research project.",
+  "scripts": {
+    "start": "node scripts/serve.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "build:offline": "node scripts/build_offline.mjs"
+  },
+  "engines": { "node": ">=20" }
+}

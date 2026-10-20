@@ -1,0 +1,24 @@
+{
+  "data_version": "0.1.0",
+  "release_date": "2026-10-20",
+  "source_files": [
+    {
+      "file": "source_data/cbp_zcta_cleaned.dta",
+      "bytes": 944505,
+      "sha256": "95810f8d4a603c4d5caa5228f11ec334686c1bd94f0d3ca28a8063637a5828c3"
+    },
+    {
+      "file": "source_data/county_mismatch_roster_original.xlsx",
+      "bytes": 49954,
+      "sha256": "46e6f6eaf7884f9f14f8a654211b58b2f6eef04aeee92bd1cd16e30d578a41bf"
+    },
+    {
+      "file": "source_data/original_panel_keys.csv",
+      "bytes": 46041,
+      "sha256": "3758c8e46df1876782484a2941807941e6f83779d411c3dd8c87ab8538f36ce7"
+    }
+  ],
+  "scope": "The 404 counties in the original CJARS-based study panel; not all US counties.",
+  "annual_derivation": "float32(1 - share_large_emp), from the prepared CBP county-year source.",
+  "upstream_limit": "The prepared CBP source is included. Original Census downloads and the upstream ZIP/ZCTA-income-county assembly are not included."
+}

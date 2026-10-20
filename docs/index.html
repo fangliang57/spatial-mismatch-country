@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Query annual county spatial mismatch for the BTB research project.">
+  <meta name="theme-color" content="#ffffff">
+  <title>County spatial mismatch</title>
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./styles.css">
+  <script type="module" src="./app.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#explorer">Skip to query</a>
+  <header class="wrap topbar">
+    <h1>County spatial mismatch</h1>
+    <nav aria-label="Main navigation">
+      <button class="text-button" data-open-methods>Data &amp; methods</button>
+      <a id="repository-link" hidden>GitHub</a>
+      <a href="./data/county_year_mismatch.csv" download>Download CSV</a>
+    </nav>
+  </header>
+  <main class="wrap">
+    <p class="scope-note"><span id="scope-counties">404</span> study counties across <span id="scope-states">25</span> states. Annual data: 2011–2022.</p>
+    <div id="loading" role="status">Loading data…</div>
+    <div id="load-error" role="alert" hidden><h2>Data could not be loaded.</h2><p>Use the offline version or open this page through the local server or GitHub Pages.</p><button id="reload">Try again</button></div>
+    <section id="explorer" class="workspace" aria-label="County mismatch query" hidden>
+      <section class="controls" aria-label="Choose county and year">
+        <div class="form-grid">
+          <div><label for="state-filter">State</label><select id="state-filter"><option value="">All 25 states</option></select></div>
+          <div class="county-field"><label for="county-search">County name or FIPS</label><div class="search-wrap"><input id="county-search" type="search" role="combobox" aria-autocomplete="list" aria-controls="county-results" aria-expanded="false" placeholder="County name or FIPS" autocomplete="off"><div id="county-results" class="search-results" role="listbox" aria-label="Matching counties" hidden></div></div></div>
+          <div><label for="year-select">Year</label><div class="year-picker"><button id="previous-year" aria-label="Previous year">←</button><select id="year-select" aria-label="Year"></select><button id="next-year" aria-label="Next year">→</button></div></div>
+          <div><label for="window-select">Period</label><select id="window-select"><option value="baseline">Baseline: 2010–2016</option><option value="extended">Extended: 2010–2022</option></select></div>
+        </div>
+        <p id="window-note" class="field-hint">2010–2016 · Annual data begin in 2011.</p>
+        <details id="comparison-options"><summary>Compare counties</summary><div class="comparison-content"><label for="compare-select">Add another county</label><div class="compare-picker"><select id="compare-select"><option value="">Add a county…</option></select><button id="add-compare" aria-label="Add comparison county">Add</button></div><div id="compare-chips"></div><p class="field-hint">Up to three counties, including the selected county.</p></div></details>
+      </section>
+
+      <div class="results">
+        <article class="county-panel" aria-labelledby="county-title">
+          <div class="county-topline"><p id="county-location"></p><div class="view-actions"><button id="share-view" class="text-button">Copy link</button><button id="presentation" class="text-button" aria-pressed="false">Present</button></div></div>
+          <div class="county-heading"><h2 id="county-title"></h2><span id="fips-label"></span></div>
+          <div class="annual-value"><p id="value-label">Mismatch in 2016</p><output id="annual-value" aria-live="polite"></output><p id="annual-interpretation"></p></div>
+          <p id="availability-note"></p>
+          <details class="analysis-reference"><summary>Original analysis references</summary><div class="reference-row"><div><p>Original analysis mean</p><strong id="original-mean"></strong><small id="original-years"></small></div><div><p>Complete six-year mean</p><strong id="complete-mean"></strong><small>All six years, 2011–2016</small></div><div><p>Original analysis group</p><strong id="original-group"></strong><small>Fixed county classification</small></div></div><p id="mean-note" hidden></p></details>
+        </article>
+
+        <details id="profile-details" class="chart-panel"><summary>Annual profile</summary><div class="panel-heading"><p>Annual spatial mismatch, from 0 to 1</p><button id="save-chart" class="text-button">Save chart</button></div><div id="chart-legend" class="chart-legend"></div><div id="profile-chart" class="profile-chart"></div><p id="chart-description" class="chart-note"></p><p id="break-note" hidden>Census reporting changed in 2017. The chart separates the two periods. <button class="text-button" data-open-methods>Read methods</button></p></details>
+
+        <details id="year-table-details" class="table-panel"><summary>Year-by-year data</summary><div class="panel-heading"><span></span><button id="download-view" class="text-button">Download this view</button></div><div class="table-scroll"><table id="annual-table"><caption class="sr-only">Annual mismatch for the selected counties.</caption><thead></thead><tbody></tbody></table></div><p class="table-note">An em dash means unavailable, never zero. “Source only” marks a value outside the original panel.</p></details>
+      </div>
+    </section>
+  </main>
+  <footer class="wrap footer">BTB research · Data version <span id="data-version">0.1.0</span>. The dataset covers the study counties, not all US counties.</footer>
+  <div id="announcement" class="sr-only" role="status" aria-live="polite"></div>
+  <div id="toast" class="toast" role="status" hidden></div>
+  <dialog id="methods-dialog" aria-labelledby="methods-title">
+    <div class="dialog-heading"><div><p class="eyebrow">DATA, DEFINITIONS &amp; REUSE</p><h2 id="methods-title">Behind the measure.</h2></div><button id="close-methods" class="icon-button" aria-label="Close data and methods">×</button></div>
+    <div class="dialog-body">
+      <section><h3>What does mismatch measure?</h3><p>For each county and year, low-income ZCTAs are identified by ranking ZCTAs by median household income and selecting ranks with <code>rank / N ≤ 0.25</code>.</p><p class="formula">Mismatch = 1 − <span>large establishments in low-income ZCTAs<br><b>all large establishments in the county</b></span></p><p>Large establishments have at least 250 employees. The ratio counts <strong>establishments</strong>, not employees. A value of 1 means the recorded large establishments are all outside the selected low-income ZCTAs. It does not mean the county has no employers.</p></section>
+      <section><h3>Annual values and original analysis references</h3><p>The annual table uses the prepared CBP source for the same 404 study counties. All six years from 2011 through 2016 are available: 2,424 observations. The original CJARS-based baseline panel retained 2,219 of those annual observations.</p><p>The <strong>original analysis mean</strong> averages a county’s available 2011–2016 values within that original panel. The <strong>complete six-year mean</strong> averages all six years from the indicator source. These definitions differ for 51 counties. The original high/low group is preserved, using a cutoff of <strong id="cutoff-text">0.7431652546</strong>; it is not recalculated from the current year or the comparison selection.</p><p>Using complete means with the original cutoff changes five groups. The explorer preserves the original groups.</p></section>
+      <section><h3>Missing years and the 2017 reporting change</h3><p>2010 has no CBP mismatch in this project. Other unavailable values have a zero denominator in the prepared source, meaning no usable reported count of large establishments. This must not be interpreted as confirmed absence of large employers.</p><p>Beginning with reference year 2017, Census publishes a cell only if it contains at least three establishments. Earlier and later values are not fully comparable. The chart separates lines at this break. <a href="https://www.census.gov/programs-surveys/cbp/technical-documentation/methodology.html" target="_blank" rel="noopener noreferrer">Census CBP methodology ↗</a></p></section>
+      <section><h3>Download the data</h3><div class="download-list"><a href="./data/county_year_mismatch.csv" download><span>County × year, long format<small>5,252 rows · 2010–2022 · CSV</small></span><b>↓</b></a><a href="./data/county_year_mismatch_wide.csv" download><span>One row per county<small>404 counties · annual columns · CSV</small></span><b>↓</b></a><a href="./data/county_mismatch_means.csv" download><span>Original and complete county means<small>Original group, cutoff, and effective year count · CSV</small></span><b>↓</b></a><a href="./data/coverage_by_year.csv" download><span>Coverage by year<small>Indicator source versus original panel · CSV</small></span><b>↓</b></a><a href="./data/counties.json" download><span>Application data<small>Full precision and missing-value reasons · JSON</small></span><b>↓</b></a></div></section>
+      <section><h3>Prepared source files</h3><p>These are the aggregate inputs used to rebuild this explorer. The CBP file covers more counties than the study; the application selects the original 404 counties.</p><div class="download-list"><a href="./sources/cbp_zcta_cleaned.dta" download><span>Prepared CBP county-year source<small>Original Stata file · 2011–2022</small></span><b>↓</b></a><a href="./sources/county_mismatch_roster_original.xlsx" download><span>Original county roster<small>Historical reference · Excel</small></span><b>↓</b></a><a href="./sources/original_panel_keys.csv" download><span>Original panel county-year keys<small>County and year only · CSV</small></span><b>↓</b></a><a href="./data/provenance.json" download><span>Source provenance<small>File identities and SHA-256 fingerprints · JSON</small></span><b>↓</b></a></div><p class="source-correction">The original roster is retained unchanged. Its Notes incorrectly describe an employment share; use the establishment-count definition above. The original Census downloads and upstream ZIP/ZCTA-income-county assembly are not bundled.</p></section>
+      <section><h3>Scope and attribution</h3><p>This is a research companion, version 0.1.0, assembled on October 20, 2026. It is limited to the 404 study counties across 25 states. A project-specific data license and publication citation have not yet been assigned. Source-agency attribution and conditions remain applicable.</p></section>
+    </div>
+  </dialog>
+  <noscript><div class="wrap">Enable JavaScript to query counties, or <a href="./data/county_year_mismatch.csv">download the CSV</a>.</div></noscript>
+</body>
+</html>
