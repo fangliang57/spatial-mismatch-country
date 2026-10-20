@@ -1,26 +1,9 @@
-import { projectConfig } from './config.js';
 import { stateNames, formatValue, valueAt, yearRange, findCounties, readView, writeView, csvText, viewRows, validateDataset } from './core.js';
 
 const $ = id => document.getElementById(id);
 const escapeText = value => String(value).replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
 const colors = ['#222222', '#555555', '#888888'];
-const dialog = $('methods-dialog');
-document.querySelectorAll('[data-open-methods]').forEach(button => button.addEventListener('click', () => dialog.showModal()));
-$('close-methods').addEventListener('click', () => dialog.close());
-dialog.addEventListener('click', event => { if (event.target === dialog) dialog.close(); });
 $('reload').addEventListener('click', () => location.reload());
-
-if (projectConfig.repositoryUrl) {
-  try {
-    const url = new URL(projectConfig.repositoryUrl);
-    if (url.protocol === 'https:' && url.hostname === 'github.com') {
-      $('repository-link').href = url.href;
-      $('repository-link').target = '_blank';
-      $('repository-link').rel = 'noopener noreferrer';
-      $('repository-link').hidden = false;
-    }
-  } catch { /* A malformed optional repository URL does not affect the explorer. */ }
-}
 
 let data, view, byFips;
 let searchMatches = [], activeSearchIndex = -1, toastTimer;
@@ -262,7 +245,7 @@ function bindEvents() {
   });
   $('save-chart').addEventListener('click', saveChart);
   $('presentation').addEventListener('click', () => togglePresentation());
-  document.addEventListener('keydown', event => { if (event.key === 'Escape' && !dialog.open) togglePresentation(false); });
+  document.addEventListener('keydown', event => { if (event.key === 'Escape') togglePresentation(false); });
   window.addEventListener('hashchange', () => { view = readView(location.hash, data); render(); });
   let lastWidth = 0;
   const observer = new ResizeObserver(entries => { const width = Math.round(entries[0].contentRect.width); if (width !== lastWidth) { lastWidth = width; renderChart(); } });
@@ -282,7 +265,6 @@ async function init() {
     $('scope-counties').textContent = data.county_count;
     $('scope-states').textContent = data.state_count;
     $('data-version').textContent = data.version;
-    $('cutoff-text').textContent = data.original_cutoff.toFixed(10);
     $('loading').hidden = true;
     $('explorer').hidden = false;
     bindEvents(); render();
