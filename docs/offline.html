@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Query annual county spatial mismatch for the BTB research project.">
+  <meta name="description" content="County spatial mismatch lookup.">
   <meta name="theme-color" content="#ffffff">
   <title>County spatial mismatch</title>
   <link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiBmaWxsPSJ3aGl0ZSIvPjx0ZXh0IHg9IjE2IiB5PSIyMyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjI0IiBmaWxsPSIjMjIyIj5tPC90ZXh0Pjwvc3ZnPgo=" type="image/svg+xml">
@@ -23,7 +23,6 @@ h1 { font-size: 23px; font-weight: 600; margin: 0 0 12px; }
 h2 { font-size: 20px; font-weight: 600; line-height: 1.4; margin: 0; }
 nav { display: flex; flex-wrap: wrap; gap: 18px; font-size: 12px; }
 .text-button { border: 0; background: none; padding: 0; text-decoration: underline; text-underline-offset: 3px; font-size: 12px; }
-.scope-note { color: #666; font-size: 12px; margin: 20px 0; }
 .controls { padding-bottom: 20px; border-bottom: 1px solid #ddd; }
 .form-grid { display: grid; grid-template-columns: 1fr 1.8fr 1fr 1.4fr; gap: 16px; }
 label { display: block; font-size: 12px; margin-bottom: 6px; }
@@ -34,7 +33,6 @@ button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible
 .year-picker { display: flex; gap: 5px; }
 .year-picker button { min-width: 29px; padding: 4px !important; }
 .year-picker select { text-align: center; }
-.field-hint { color: #777; font-size: 11px; margin: 9px 0 0; }
 details { margin-top: 16px; }
 summary { font-size: 13px; width: fit-content; }
 .comparison-content { max-width: 480px; padding-top: 12px; }
@@ -55,14 +53,11 @@ summary { font-size: 13px; width: fit-content; }
 #value-label { font-size: 12px; margin: 0 0 3px; }
 #annual-value { display: block; font-size: 34px; line-height: 1.3; font-weight: 500; font-variant-numeric: tabular-nums; }
 #annual-value.unavailable { font-size: 25px; }
-#annual-interpretation, #availability-note { font-size: 11px; color: #777; line-height: 1.7; margin: 8px 0 0; }
-#availability-note.notice { color: #555; }
 .analysis-reference { margin-top: 20px; }
 .reference-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 14px; }
 .reference-row p { font-size: 11px; color: #666; margin: 0 0 4px; }
 .reference-row strong { display: block; font-size: 16px; font-weight: 500; }
 .reference-row small { display: block; color: #777; font-size: 10px; margin-top: 4px; }
-#mean-note { font-size: 11px; color: #666; margin-top: 14px; }
 .chart-panel, .table-panel { border-top: 1px solid #ddd; padding-top: 16px; }
 .panel-heading { display: flex; align-items: center; justify-content: space-between; gap: 15px; margin: 14px 0 12px; }
 .panel-heading p { margin: 0; color: #666; font-size: 11px; }
@@ -73,8 +68,6 @@ summary { font-size: 13px; width: fit-content; }
 .profile-chart { margin-top: 10px; }
 .profile-chart svg { display: block; width: 100%; height: auto; overflow: visible; }
 .chart-point { cursor: pointer; }
-.chart-note, #break-note, .table-note { font-size: 10px; line-height: 1.7; color: #777; margin-top: 10px; }
-.chart-note button, #break-note button { font-size: inherit; }
 .table-scroll { overflow-x: auto; }
 table { width: 100%; border-collapse: collapse; font-size: 12px; font-variant-numeric: tabular-nums; }
 th, td { padding: 9px; border-bottom: 1px solid #eee; text-align: right; font-weight: 400; }
@@ -84,7 +77,6 @@ tr.selected { background: #f5f5f5; }
 tr.selected button { font-weight: 600; }
 .inline-button { border: 0 !important; padding: 0 !important; background: none !important; text-decoration: underline; text-underline-offset: 3px; font-size: inherit; }
 .panel-status { font-size: 11px; color: #777; }
-.footer { font-size: 10px; color: #777; margin-top: 35px; padding-top: 16px; padding-bottom: 24px; border-top: 1px solid #ddd; line-height: 1.7; }
 .search-wrap { position: relative; }
 .search-results { position: absolute; z-index: 10; top: 40px; left: 0; right: 0; max-height: 300px; overflow: auto; background: #fff; border: 1px solid #aaa; }
 .search-option { display: flex; justify-content: space-between; gap: 14px; padding: 9px 10px; cursor: pointer; font-size: 12px; }
@@ -96,12 +88,11 @@ tr.selected button { font-weight: 600; }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
 .skip-link { position: fixed; top: -100px; left: 12px; background: #fff; padding: 10px; z-index: 200; }
 .skip-link:focus { top: 10px; }
-.presentation .controls, .presentation .scope-note, .presentation .table-panel, .presentation nav { display: none; }
+.presentation .controls, .presentation .table-panel, .presentation nav { display: none; }
 .presentation #annual-value { font-size: 46px; }
 .presentation .county-panel { padding-top: 26px; }
 @media(max-width:760px) { .form-grid { grid-template-columns: 1fr 1fr; } .county-field { min-width: 0; } }
 @media(max-width:460px) { .wrap { padding-inline: 18px; } .topbar { padding-top: 22px; } h1 { font-size: 21px; } .form-grid { grid-template-columns: 1fr; gap: 13px; } .year-picker select { flex: 1; } .county-topline { align-items: flex-start; } .county-topline p { max-width: 130px; } .view-actions { gap: 12px; } .view-actions .text-button { font-size: 10px; } h2 { font-size: 19px; } .reference-row { grid-template-columns: 1fr; gap: 13px; } .compare-picker select { font-size: 11px; } .dialog-heading { padding: 18px; } .dialog-body { padding-inline: 18px; } }
-@media print { .controls, .scope-note, nav, .view-actions, .text-button, .toast, dialog, .footer { display: none !important; } .wrap { max-width: none; padding: 0; } .county-panel { break-inside: avoid; } .chart-panel { break-inside: avoid; } }
 
 nav { align-items: flex-start; }
 .download-menu { position: relative; margin: 0; }
@@ -137,9 +128,8 @@ nav { align-items: flex-start; }
     </nav>
   </header>
   <main class="wrap">
-    <p class="scope-note"><span id="scope-counties">404</span> study counties across <span id="scope-states">25</span> states. Annual data: 2011–2022.</p>
     <div id="loading" role="status">Loading data…</div>
-    <div id="load-error" role="alert" hidden><h2>Data could not be loaded.</h2><p>Use the offline version or open this page through the local server or GitHub Pages.</p><button id="reload">Try again</button></div>
+    <div id="load-error" role="alert" hidden><h2>Data could not be loaded.</h2><button id="reload">Try again</button></div>
     <section id="explorer" class="workspace" aria-label="County mismatch query" hidden>
       <section class="controls" aria-label="Choose county and year">
         <div class="form-grid">
@@ -148,26 +138,25 @@ nav { align-items: flex-start; }
           <div><label for="year-select">Year</label><div class="year-picker"><button id="previous-year" aria-label="Previous year">←</button><select id="year-select" aria-label="Year"></select><button id="next-year" aria-label="Next year">→</button></div></div>
           <div><label for="window-select">Period</label><select id="window-select"><option value="baseline">Baseline: 2010–2016</option><option value="extended">Extended: 2010–2022</option></select></div>
         </div>
-        <p id="window-note" class="field-hint">2010–2016 · Annual data begin in 2011.</p>
-        <details id="comparison-options"><summary>Compare counties</summary><div class="comparison-content"><label for="compare-select">Add another county</label><div class="compare-picker"><select id="compare-select"><option value="">Add a county…</option></select><button id="add-compare" aria-label="Add comparison county">Add</button></div><div id="compare-chips"></div><p class="field-hint">Up to three counties, including the selected county.</p></div></details>
+        
+        <details id="comparison-options"><summary>Compare counties</summary><div class="comparison-content"><label for="compare-select">Add another county</label><div class="compare-picker"><select id="compare-select"><option value="">Add a county…</option></select><button id="add-compare" aria-label="Add comparison county">Add</button></div><div id="compare-chips"></div></div></details>
       </section>
 
       <div class="results">
         <article class="county-panel" aria-labelledby="county-title">
           <div class="county-topline"><p id="county-location"></p><div class="view-actions"><button id="share-view" class="text-button">Copy link</button><button id="presentation" class="text-button" aria-pressed="false">Present</button></div></div>
           <div class="county-heading"><h2 id="county-title"></h2><span id="fips-label"></span></div>
-          <div class="annual-value"><p id="value-label">Mismatch in 2016</p><output id="annual-value" aria-live="polite"></output><p id="annual-interpretation"></p></div>
-          <p id="availability-note"></p>
-          <details class="analysis-reference"><summary>Original analysis references</summary><div class="reference-row"><div><p>Original analysis mean</p><strong id="original-mean"></strong><small id="original-years"></small></div><div><p>Complete six-year mean</p><strong id="complete-mean"></strong><small>All six years, 2011–2016</small></div><div><p>Original analysis group</p><strong id="original-group"></strong><small>Fixed county classification</small></div></div><p id="mean-note" hidden></p></details>
+          <div class="annual-value"><p id="value-label">Mismatch in 2016</p><output id="annual-value" aria-live="polite"></output></div>
+          
+          <details class="analysis-reference"><summary>Original analysis references</summary><div class="reference-row"><div><p>Original analysis mean</p><strong id="original-mean"></strong><small id="original-years"></small></div><div><p>Complete six-year mean</p><strong id="complete-mean"></strong><small>All six years, 2011–2016</small></div><div><p>Original analysis group</p><strong id="original-group"></strong></div></div></details>
         </article>
 
-        <details id="profile-details" class="chart-panel"><summary>Annual profile</summary><div class="panel-heading"><p>Annual spatial mismatch, from 0 to 1</p><button id="save-chart" class="text-button">Save chart</button></div><div id="chart-legend" class="chart-legend"></div><div id="profile-chart" class="profile-chart"></div><p id="chart-description" class="chart-note"></p><p id="break-note" hidden>Census reporting changed in 2017. The chart separates the two periods.</p></details>
+        <details id="profile-details" class="chart-panel"><summary>Annual profile</summary><div class="panel-heading"><p>Annual spatial mismatch, from 0 to 1</p><button id="save-chart" class="text-button">Save chart</button></div><div id="chart-legend" class="chart-legend"></div><div id="profile-chart" class="profile-chart"></div></details>
 
-        <details id="year-table-details" class="table-panel"><summary>Year-by-year data</summary><div class="panel-heading"><span></span><button id="download-view" class="text-button">Download this view</button></div><div class="table-scroll"><table id="annual-table"><caption class="sr-only">Annual mismatch for the selected counties.</caption><thead></thead><tbody></tbody></table></div><p class="table-note">An em dash means unavailable, never zero. “Source only” marks a value outside the original panel.</p></details>
+        <details id="year-table-details" class="table-panel"><summary>Year-by-year data</summary><div class="panel-heading"><span></span><button id="download-view" class="text-button">Download this view</button></div><div class="table-scroll"><table id="annual-table"><caption class="sr-only">Annual mismatch for the selected counties.</caption><thead></thead><tbody></tbody></table></div></details>
       </div>
     </section>
   </main>
-  <footer class="wrap footer">BTB research · Data version <span id="data-version">0.1.0</span>. The dataset covers the study counties, not all US counties.</footer>
   <div id="announcement" class="sr-only" role="status" aria-live="polite"></div>
   <div id="toast" class="toast" role="status" hidden></div>
   <noscript><div class="wrap">Enable JavaScript to query counties, or <a href="./data/county_year_mismatch.csv">download the CSV</a>.</div></noscript>
@@ -319,38 +308,16 @@ function render() {
   $('next-year').disabled = view.year === years.at(-1);
   document.querySelectorAll('[data-window]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.window === view.scope)));
   $('window-select').value = view.scope;
-  $('window-note').textContent = view.scope === 'baseline' ? '2010–2016 · Annual data begin in 2011.' : '2010–2022 · Reporting changes begin in 2017.';
   $('value-label').textContent = `Mismatch in ${view.year}`;
   $('annual-value').textContent = annual === null ? 'Not available' : formatValue(annual);
   $('annual-value').classList.toggle('unavailable', annual === null);
   const indicator = document.querySelector('.measure-scale i');
   if (indicator) { indicator.style.visibility = annual === null ? 'hidden' : 'visible'; indicator.style.left = `${(annual ?? 0) * 100}%`; }
-  $('annual-interpretation').textContent = annual === null ? 'No annual value is available for this county-year.' : `${(county.shares[view.year - 2010] * 100).toFixed(1)}% of recorded large establishments are in low-income ZCTAs.`;
-
-  const note = $('availability-note');
-  note.classList.remove('notice');
-  if (view.year === 2010) {
-    note.textContent = 'The project’s CBP source begins in 2011. The 2010 annual measure is missing; the original county classification remains available.';
-    note.classList.add('notice');
-  } else if (annual === null) {
-    note.textContent = 'The prepared source has no usable reported large-establishment denominator. This is unavailable data, not a mismatch of zero.';
-    note.classList.add('notice');
-  } else if (!county.original_panel_years.includes(view.year)) {
-    note.textContent = 'Source-only observation: this annual value is available in CBP but this county-year was outside the original analysis panel.';
-    note.classList.add('notice');
-  } else {
-    note.textContent = `Available in the original ${view.year <= 2016 ? 'baseline' : 'extended'} panel · Annual source: prepared CBP county-year data.`;
-  }
   $('original-mean').textContent = formatValue(county.original_mean);
   $('original-years').textContent = `${county.original_mean_n_years} available ${county.original_mean_n_years === 1 ? 'year' : 'years'}, 2011–2016`;
   $('complete-mean').textContent = formatValue(county.complete_mean);
   $('original-group').textContent = county.original_high ? 'High mismatch' : 'Low mismatch';
   $('original-group').classList.toggle('high', Boolean(county.original_high));
-  $('mean-note').hidden = county.original_mean_n_years === 6;
-  $('mean-note').textContent = `The original analysis mean uses ${county.original_mean_n_years} available ${county.original_mean_n_years === 1 ? 'year' : 'years'} for this county. The complete mean uses all six. The original group is retained.`;
-  $('break-note').hidden = view.scope !== 'extended';
-  $('chart-description').textContent = view.compare.length ? 'Values range from 0 to 1. Missing values leave gaps. Select a point on the first county’s line to change the year.' : 'Values range from 0 to 1. The dashed line is the original analysis mean. Select a point to change the year.';
-
   const selectedCounties = [county, ...view.compare.map(fips => byFips.get(fips))];
   $('chart-legend').innerHTML = selectedCounties.map((c, i) => `<span><i class="legend-line ${i === 1 ? 'dashed' : ''}" style="--legend-color:${colors[i]}"></i>${escapeText(c.name)}, ${c.state}</span>`).join('') + (view.compare.length ? '' : '<span><i class="legend-line dashed" style="--legend-color:#999999"></i>Original analysis mean</span>');
   $('compare-chips').innerHTML = view.compare.map((fips, i) => { const c = byFips.get(fips); return `<div class="compare-chip"><span><i style="color:${colors[i + 1]}" aria-hidden="true">●</i> ${escapeText(c.name)}, ${c.state}</span><button data-remove="${fips}" aria-label="Remove ${escapeText(c.name)}, ${c.state}">×</button></div>`; }).join('');
@@ -386,7 +353,7 @@ function renderChart() {
   const height = 248, left = 39, right = width - 15, top = 25, bottom = 213;
   const x = year => left + (year - years[0]) / (years.at(-1) - years[0]) * (right - left);
   const y = value => bottom - value * (bottom - top);
-  const parts = [`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="Annual spatial mismatch for ${escapeText(selected.map(c => `${c.name}, ${c.state}`).join('; '))}" aria-describedby="chart-description" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif"><title>Annual spatial mismatch; 0 to 1</title>`];
+  const parts = [`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="Annual spatial mismatch for ${escapeText(selected.map(c => `${c.name}, ${c.state}`).join('; '))}" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif"><title>Annual spatial mismatch; 0 to 1</title>`];
   if (view.scope === 'extended') {
     parts.push(`<rect x="${x(2016.5)}" y="${top}" width="${right - x(2016.5)}" height="${bottom - top}" fill="#f7f7f7"/><line x1="${x(2016.5)}" x2="${x(2016.5)}" y1="${top}" y2="${bottom}" stroke="#aaaaaa" stroke-dasharray="3 4"/><text x="${right}" y="12" text-anchor="end" font-size="9" fill="#777777">2017 reporting change</text>`);
   }
@@ -432,7 +399,7 @@ function saveChart() {
   const svg = $('profile-chart').querySelector('svg');
   const [,, width, height] = svg.getAttribute('viewBox').split(' ').map(Number);
   const countyNames = [view.county, ...view.compare].map(f => { const c = byFips.get(f); return `${c.name}, ${c.state}`; }).join(' · ');
-  const exported = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height + 89}" width="${width * 2}" height="${(height + 89) * 2}"><rect width="100%" height="100%" fill="white"/><text x="39" y="22" font-family="Georgia,serif" font-size="16" fill="#171717">Annual spatial mismatch</text><text x="39" y="40" font-family="sans-serif" font-size="10" fill="#666666">${escapeText(countyNames)}</text><g transform="translate(0,48)">${svg.innerHTML}</g><text x="39" y="${height + 66}" font-family="sans-serif" font-size="8" fill="#666666">BTB Research · ${view.scope === 'extended' ? '2010–2022; reporting break in 2017' : '2010–2016; 2010 unavailable'} · data v${data.version}</text><text x="39" y="${height + 80}" font-family="sans-serif" font-size="8" fill="#666666">${view.compare.length ? 'Series order: dark solid, gray dashed, light gray dotted.' : 'Dashed gray line: original analysis mean.'}</text></svg>`;
+  const exported = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height + 56}" width="${width * 2}" height="${(height + 56) * 2}"><rect width="100%" height="100%" fill="white"/><text x="39" y="22" font-family="Georgia,serif" font-size="16" fill="#171717">Annual spatial mismatch</text><text x="39" y="40" font-family="sans-serif" font-size="10" fill="#666666">${escapeText(countyNames)}</text><g transform="translate(0,48)">${svg.innerHTML}</g></svg>`;
   download(`mismatch-profile-${view.county}.svg`, exported, 'image/svg+xml');
   toast('Chart saved as SVG.');
 }
@@ -503,9 +470,6 @@ async function init() {
     view = readView(location.hash, data);
     const states = [...new Set(data.counties.map(c => c.state))].sort((a, b) => stateNames[a].localeCompare(stateNames[b]));
     $('state-filter').innerHTML = `<option value="">All ${states.length} states</option>` + states.map(state => `<option value="${state}">${escapeText(stateNames[state])} (${state})</option>`).join('');
-    $('scope-counties').textContent = data.county_count;
-    $('scope-states').textContent = data.state_count;
-    $('data-version').textContent = data.version;
     $('loading').hidden = true;
     $('explorer').hidden = false;
     bindEvents(); render();

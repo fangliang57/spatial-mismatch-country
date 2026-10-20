@@ -78,38 +78,16 @@ function render() {
   $('next-year').disabled = view.year === years.at(-1);
   document.querySelectorAll('[data-window]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.window === view.scope)));
   $('window-select').value = view.scope;
-  $('window-note').textContent = view.scope === 'baseline' ? '2010–2016 · Annual data begin in 2011.' : '2010–2022 · Reporting changes begin in 2017.';
   $('value-label').textContent = `Mismatch in ${view.year}`;
   $('annual-value').textContent = annual === null ? 'Not available' : formatValue(annual);
   $('annual-value').classList.toggle('unavailable', annual === null);
   const indicator = document.querySelector('.measure-scale i');
   if (indicator) { indicator.style.visibility = annual === null ? 'hidden' : 'visible'; indicator.style.left = `${(annual ?? 0) * 100}%`; }
-  $('annual-interpretation').textContent = annual === null ? 'No annual value is available for this county-year.' : `${(county.shares[view.year - 2010] * 100).toFixed(1)}% of recorded large establishments are in low-income ZCTAs.`;
-
-  const note = $('availability-note');
-  note.classList.remove('notice');
-  if (view.year === 2010) {
-    note.textContent = 'The project’s CBP source begins in 2011. The 2010 annual measure is missing; the original county classification remains available.';
-    note.classList.add('notice');
-  } else if (annual === null) {
-    note.textContent = 'The prepared source has no usable reported large-establishment denominator. This is unavailable data, not a mismatch of zero.';
-    note.classList.add('notice');
-  } else if (!county.original_panel_years.includes(view.year)) {
-    note.textContent = 'Source-only observation: this annual value is available in CBP but this county-year was outside the original analysis panel.';
-    note.classList.add('notice');
-  } else {
-    note.textContent = `Available in the original ${view.year <= 2016 ? 'baseline' : 'extended'} panel · Annual source: prepared CBP county-year data.`;
-  }
   $('original-mean').textContent = formatValue(county.original_mean);
   $('original-years').textContent = `${county.original_mean_n_years} available ${county.original_mean_n_years === 1 ? 'year' : 'years'}, 2011–2016`;
   $('complete-mean').textContent = formatValue(county.complete_mean);
   $('original-group').textContent = county.original_high ? 'High mismatch' : 'Low mismatch';
   $('original-group').classList.toggle('high', Boolean(county.original_high));
-  $('mean-note').hidden = county.original_mean_n_years === 6;
-  $('mean-note').textContent = `The original analysis mean uses ${county.original_mean_n_years} available ${county.original_mean_n_years === 1 ? 'year' : 'years'} for this county. The complete mean uses all six. The original group is retained.`;
-  $('break-note').hidden = view.scope !== 'extended';
-  $('chart-description').textContent = view.compare.length ? 'Values range from 0 to 1. Missing values leave gaps. Select a point on the first county’s line to change the year.' : 'Values range from 0 to 1. The dashed line is the original analysis mean. Select a point to change the year.';
-
   const selectedCounties = [county, ...view.compare.map(fips => byFips.get(fips))];
   $('chart-legend').innerHTML = selectedCounties.map((c, i) => `<span><i class="legend-line ${i === 1 ? 'dashed' : ''}" style="--legend-color:${colors[i]}"></i>${escapeText(c.name)}, ${c.state}</span>`).join('') + (view.compare.length ? '' : '<span><i class="legend-line dashed" style="--legend-color:#999999"></i>Original analysis mean</span>');
   $('compare-chips').innerHTML = view.compare.map((fips, i) => { const c = byFips.get(fips); return `<div class="compare-chip"><span><i style="color:${colors[i + 1]}" aria-hidden="true">●</i> ${escapeText(c.name)}, ${c.state}</span><button data-remove="${fips}" aria-label="Remove ${escapeText(c.name)}, ${c.state}">×</button></div>`; }).join('');
@@ -145,7 +123,7 @@ function renderChart() {
   const height = 248, left = 39, right = width - 15, top = 25, bottom = 213;
   const x = year => left + (year - years[0]) / (years.at(-1) - years[0]) * (right - left);
   const y = value => bottom - value * (bottom - top);
-  const parts = [`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="Annual spatial mismatch for ${escapeText(selected.map(c => `${c.name}, ${c.state}`).join('; '))}" aria-describedby="chart-description" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif"><title>Annual spatial mismatch; 0 to 1</title>`];
+  const parts = [`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="Annual spatial mismatch for ${escapeText(selected.map(c => `${c.name}, ${c.state}`).join('; '))}" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif"><title>Annual spatial mismatch; 0 to 1</title>`];
   if (view.scope === 'extended') {
     parts.push(`<rect x="${x(2016.5)}" y="${top}" width="${right - x(2016.5)}" height="${bottom - top}" fill="#f7f7f7"/><line x1="${x(2016.5)}" x2="${x(2016.5)}" y1="${top}" y2="${bottom}" stroke="#aaaaaa" stroke-dasharray="3 4"/><text x="${right}" y="12" text-anchor="end" font-size="9" fill="#777777">2017 reporting change</text>`);
   }
@@ -191,7 +169,7 @@ function saveChart() {
   const svg = $('profile-chart').querySelector('svg');
   const [,, width, height] = svg.getAttribute('viewBox').split(' ').map(Number);
   const countyNames = [view.county, ...view.compare].map(f => { const c = byFips.get(f); return `${c.name}, ${c.state}`; }).join(' · ');
-  const exported = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height + 89}" width="${width * 2}" height="${(height + 89) * 2}"><rect width="100%" height="100%" fill="white"/><text x="39" y="22" font-family="Georgia,serif" font-size="16" fill="#171717">Annual spatial mismatch</text><text x="39" y="40" font-family="sans-serif" font-size="10" fill="#666666">${escapeText(countyNames)}</text><g transform="translate(0,48)">${svg.innerHTML}</g><text x="39" y="${height + 66}" font-family="sans-serif" font-size="8" fill="#666666">BTB Research · ${view.scope === 'extended' ? '2010–2022; reporting break in 2017' : '2010–2016; 2010 unavailable'} · data v${data.version}</text><text x="39" y="${height + 80}" font-family="sans-serif" font-size="8" fill="#666666">${view.compare.length ? 'Series order: dark solid, gray dashed, light gray dotted.' : 'Dashed gray line: original analysis mean.'}</text></svg>`;
+  const exported = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height + 56}" width="${width * 2}" height="${(height + 56) * 2}"><rect width="100%" height="100%" fill="white"/><text x="39" y="22" font-family="Georgia,serif" font-size="16" fill="#171717">Annual spatial mismatch</text><text x="39" y="40" font-family="sans-serif" font-size="10" fill="#666666">${escapeText(countyNames)}</text><g transform="translate(0,48)">${svg.innerHTML}</g></svg>`;
   download(`mismatch-profile-${view.county}.svg`, exported, 'image/svg+xml');
   toast('Chart saved as SVG.');
 }
@@ -262,9 +240,6 @@ async function init() {
     view = readView(location.hash, data);
     const states = [...new Set(data.counties.map(c => c.state))].sort((a, b) => stateNames[a].localeCompare(stateNames[b]));
     $('state-filter').innerHTML = `<option value="">All ${states.length} states</option>` + states.map(state => `<option value="${state}">${escapeText(stateNames[state])} (${state})</option>`).join('');
-    $('scope-counties').textContent = data.county_count;
-    $('scope-states').textContent = data.state_count;
-    $('data-version').textContent = data.version;
     $('loading').hidden = true;
     $('explorer').hidden = false;
     bindEvents(); render();
