@@ -49,12 +49,13 @@ summary { font-size: 13px; width: fit-content; }
 .view-actions .text-button { font-size: 11px; }
 .county-heading { display: flex; align-items: baseline; flex-wrap: wrap; gap: 12px; }
 #fips-label { color: #777; font-size: 10px; }
-.annual-value { margin-top: 20px; }
-#value-label { font-size: 12px; margin: 0 0 3px; }
-#annual-value { display: block; font-size: 34px; line-height: 1.3; font-weight: 500; font-variant-numeric: tabular-nums; }
+.mismatch-values { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; margin-top: 20px; }
+#value-label, #mean-label { font-size: 12px; margin: 0 0 3px; }
+#annual-value, #original-mean { display: block; font-size: 34px; line-height: 1.3; font-weight: 500; font-variant-numeric: tabular-nums; }
+#original-years { display: block; font-size: 10px; color: #777; margin-top: 4px; }
 #annual-value.unavailable { font-size: 25px; }
 .analysis-reference { margin-top: 20px; }
-.reference-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 14px; }
+.reference-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-top: 14px; }
 .reference-row p { font-size: 11px; color: #666; margin: 0 0 4px; }
 .reference-row strong { display: block; font-size: 16px; font-weight: 500; }
 .reference-row small { display: block; color: #777; font-size: 10px; margin-top: 4px; }
@@ -89,7 +90,7 @@ tr.selected button { font-weight: 600; }
 .skip-link { position: fixed; top: -100px; left: 12px; background: #fff; padding: 10px; z-index: 200; }
 .skip-link:focus { top: 10px; }
 .presentation .controls, .presentation .table-panel, .presentation nav { display: none; }
-.presentation #annual-value { font-size: 46px; }
+.presentation #annual-value, .presentation #original-mean { font-size: 46px; }
 .presentation .county-panel { padding-top: 26px; }
 @media(max-width:760px) { .form-grid { grid-template-columns: 1fr 1fr; } .county-field { min-width: 0; } }
 @media(max-width:460px) { .wrap { padding-inline: 18px; } .topbar { padding-top: 22px; } h1 { font-size: 21px; } .form-grid { grid-template-columns: 1fr; gap: 13px; } .year-picker select { flex: 1; } .county-topline { align-items: flex-start; } .county-topline p { max-width: 130px; } .view-actions { gap: 12px; } .view-actions .text-button { font-size: 10px; } h2 { font-size: 19px; } .reference-row { grid-template-columns: 1fr; gap: 13px; } .compare-picker select { font-size: 11px; } .dialog-heading { padding: 18px; } .dialog-body { padding-inline: 18px; } }
@@ -146,9 +147,11 @@ nav { align-items: flex-start; }
         <article class="county-panel" aria-labelledby="county-title">
           <div class="county-topline"><p id="county-location"></p><div class="view-actions"><button id="share-view" class="text-button">Copy link</button><button id="presentation" class="text-button" aria-pressed="false">Present</button></div></div>
           <div class="county-heading"><h2 id="county-title"></h2><span id="fips-label"></span></div>
-          <div class="annual-value"><p id="value-label">Mismatch in 2016</p><output id="annual-value" aria-live="polite"></output></div>
-          
-          <details class="analysis-reference"><summary>Original analysis references</summary><div class="reference-row"><div><p>Original analysis mean</p><strong id="original-mean"></strong><small id="original-years"></small></div><div><p>Complete six-year mean</p><strong id="complete-mean"></strong><small>All six years, 2011–2016</small></div><div><p>Original analysis group</p><strong id="original-group"></strong></div></div></details>
+          <div class="mismatch-values">
+            <div><p id="value-label">Mismatch in 2016</p><output id="annual-value" aria-live="polite"></output></div>
+            <div><p id="mean-label">Average mismatch (2011–2016)</p><output id="original-mean" aria-labelledby="mean-label" aria-live="polite"></output><small id="original-years"></small></div>
+          </div>
+          <details class="analysis-reference"><summary>Original analysis references</summary><div class="reference-row"><div><p>Complete six-year mean</p><strong id="complete-mean"></strong><small>All six years, 2011–2016</small></div><div><p>Original analysis group</p><strong id="original-group"></strong></div></div></details>
         </article>
 
         <details id="profile-details" class="chart-panel"><summary>Annual profile</summary><div class="panel-heading"><p>Annual spatial mismatch, from 0 to 1</p><button id="save-chart" class="text-button">Save chart</button></div><div id="chart-legend" class="chart-legend"></div><div id="profile-chart" class="profile-chart"></div></details>
@@ -314,7 +317,7 @@ function render() {
   const indicator = document.querySelector('.measure-scale i');
   if (indicator) { indicator.style.visibility = annual === null ? 'hidden' : 'visible'; indicator.style.left = `${(annual ?? 0) * 100}%`; }
   $('original-mean').textContent = formatValue(county.original_mean);
-  $('original-years').textContent = `${county.original_mean_n_years} available ${county.original_mean_n_years === 1 ? 'year' : 'years'}, 2011–2016`;
+  $('original-years').textContent = `${county.original_mean_n_years} ${county.original_mean_n_years === 1 ? 'year' : 'years'}`;
   $('complete-mean').textContent = formatValue(county.complete_mean);
   $('original-group').textContent = county.original_high ? 'High mismatch' : 'Low mismatch';
   $('original-group').classList.toggle('high', Boolean(county.original_high));

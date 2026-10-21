@@ -84,7 +84,7 @@ function render() {
   const indicator = document.querySelector('.measure-scale i');
   if (indicator) { indicator.style.visibility = annual === null ? 'hidden' : 'visible'; indicator.style.left = `${(annual ?? 0) * 100}%`; }
   $('original-mean').textContent = formatValue(county.original_mean);
-  $('original-years').textContent = `${county.original_mean_n_years} available ${county.original_mean_n_years === 1 ? 'year' : 'years'}, 2011–2016`;
+  $('original-years').textContent = `${county.original_mean_n_years} ${county.original_mean_n_years === 1 ? 'year' : 'years'}`;
   $('complete-mean').textContent = formatValue(county.complete_mean);
   $('original-group').textContent = county.original_high ? 'High mismatch' : 'Low mismatch';
   $('original-group').classList.toggle('high', Boolean(county.original_high));

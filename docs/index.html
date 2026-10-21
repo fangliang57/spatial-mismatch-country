@@ -52,9 +52,11 @@
         <article class="county-panel" aria-labelledby="county-title">
           <div class="county-topline"><p id="county-location"></p><div class="view-actions"><button id="share-view" class="text-button">Copy link</button><button id="presentation" class="text-button" aria-pressed="false">Present</button></div></div>
           <div class="county-heading"><h2 id="county-title"></h2><span id="fips-label"></span></div>
-          <div class="annual-value"><p id="value-label">Mismatch in 2016</p><output id="annual-value" aria-live="polite"></output></div>
-          
-          <details class="analysis-reference"><summary>Original analysis references</summary><div class="reference-row"><div><p>Original analysis mean</p><strong id="original-mean"></strong><small id="original-years"></small></div><div><p>Complete six-year mean</p><strong id="complete-mean"></strong><small>All six years, 2011–2016</small></div><div><p>Original analysis group</p><strong id="original-group"></strong></div></div></details>
+          <div class="mismatch-values">
+            <div><p id="value-label">Mismatch in 2016</p><output id="annual-value" aria-live="polite"></output></div>
+            <div><p id="mean-label">Average mismatch (2011–2016)</p><output id="original-mean" aria-labelledby="mean-label" aria-live="polite"></output><small id="original-years"></small></div>
+          </div>
+          <details class="analysis-reference"><summary>Original analysis references</summary><div class="reference-row"><div><p>Complete six-year mean</p><strong id="complete-mean"></strong><small>All six years, 2011–2016</small></div><div><p>Original analysis group</p><strong id="original-group"></strong></div></div></details>
         </article>
 
         <details id="profile-details" class="chart-panel"><summary>Annual profile</summary><div class="panel-heading"><p>Annual spatial mismatch, from 0 to 1</p><button id="save-chart" class="text-button">Save chart</button></div><div id="chart-legend" class="chart-legend"></div><div id="profile-chart" class="profile-chart"></div></details>
